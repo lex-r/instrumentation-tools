@@ -50,7 +50,7 @@ func addFlags(cmd *cobra.Command, options *PromQOptions) {
 	cmd.Flags().BoolVarP(&options.flags.Continuous, "continuous", "c", options.flags.Continuous, "if true, runs continuously (i.e. gathers samples in mem)")
 	cmd.Flags().BoolVarP(&options.flags.List, "list", "l", options.flags.List, "if true, lists out observed metric names.")
 	cmd.Flags().StringVarP(&options.flags.PromQuery, "query", "q", "", "if specified, uses this query for analyzing a prometheus endpoint.")
-	cmd.Flags().StringVarP(&options.flags.Output, "output", "o", "json", "output format for data, defaults to json")
+	cmd.Flags().StringVarP(&options.flags.Output, "output", "o", "plain", "output format for data")
 	cmd.Flags().StringArrayVarP(&options.flags.HostNames, "targets", "t", options.flags.HostNames, "prometheus metrics endpoint")
 }
 
@@ -62,6 +62,7 @@ func NewCmdPromQ(streams genericclioptions.IOStreams) *RootPromQCmd {
 		Example: `
 promq                                               # for interactive mode
 promq -l                                            # to list metrics  
+promq -q "apiserver_request_total" -oplain          # to query for all metrics matching the promql query in plain
 promq -q "apiserver_request_total" -ojson           # to query for all metrics matching the promql query in json
 promq -q "apiserver_request_total" -oyaml           # to query for all metrics matching the promql query in yaml
 `,

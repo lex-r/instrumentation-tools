@@ -17,12 +17,15 @@ limitations under the License.
 package prom
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/fatih/color"
 	"github.com/golang/protobuf/proto"
 	"github.com/hokaccha/go-prettyjson"
+	"github.com/prometheus/prometheus/pkg/labels"
 	"github.com/prometheus/prometheus/promql"
 	"gopkg.in/yaml.v2"
 )
@@ -83,8 +86,32 @@ func ToYaml(result *promql.Result) (*string, error) {
 	return proto.String(string(o)), nil
 }
 
+func ToPlain(result *promql.Result) (*string, error) {
+	if result.Err != nil {
+		return nil, result.Err
+	}
+	if result.Warnings != nil {
+		for _, e := range result.Warnings {
+			fmt.Println(e)
+		}
+	}
+	o, err := PlainMarshal(result.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	return proto.String(string(o)), nil
+}
+
 func ToPrettyFormat(res *promql.Result, outputType string, colorized bool) (*string, error) {
 	switch outputType {
+	case "plain":
+		o, err := ToPlain(res)
+		if err != nil {
+			return nil, err
+		}
+		return o, nil
+
 	case "json":
 		var o *string
 		var err error
@@ -106,4 +133,30 @@ func ToPrettyFormat(res *promql.Result, outputType string, colorized bool) (*str
 		return o, nil
 	}
 	return nil, fmt.Errorf("unsupported formatting option (%s)", outputType)
+}
+
+func PlainMarshal(value promql.Value) ([]byte, error) {
+	switch val := value.(type) {
+	case promql.Vector:
+		var buf bytes.Buffer
+		for i, v := range val {
+			if v.Metric.Has(labels.MetricName) {
+				buf.WriteString(v.Metric.Get(labels.MetricName))
+				buf.WriteString("")
+			}
+			lbs := v.Metric.MatchLabels(false, labels.MetricName)
+			if len(lbs) > 0 {
+				buf.WriteString(lbs.String())
+				buf.WriteString(" ")
+			}
+			vv := strconv.FormatFloat(v.V, 'f', -1, 64)
+			buf.WriteString(fmt.Sprintf("%v", vv))
+			if i < len(val)-1 {
+				buf.WriteString("\n")
+			}
+		}
+		return buf.Bytes(), nil
+	default:
+		return nil, fmt.Errorf("unsupported value type %T", val)
+	}
 }
