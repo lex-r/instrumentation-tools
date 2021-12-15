@@ -22,14 +22,15 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"sigs.k8s.io/instrumentation-tools/promq/term"
-	"sigs.k8s.io/instrumentation-tools/promq/term/plot"
+	"github.com/lex-r/promq/promq/term"
+	"github.com/lex-r/promq/promq/term/plot"
 )
 
 type trivialPoint struct {
 	x int64
 	y float64
 }
+
 func (p trivialPoint) X() int64 {
 	return p.x
 }
@@ -39,9 +40,10 @@ func (p trivialPoint) Y() float64 {
 
 type trivialSeries struct {
 	title string
-	id plot.SeriesId
-	pts []plot.Point
+	id    plot.SeriesId
+	pts   []plot.Point
 }
+
 func (s trivialSeries) Title() string {
 	return s.title
 }
@@ -55,7 +57,7 @@ func (s trivialSeries) Points() []plot.Point {
 var samplePlatonicGraph = plot.DataToPlatonicGraph(
 	plot.SeriesSet{trivialSeries{
 		title: "linear 1",
-		id: plot.SeriesId(1),
+		id:    plot.SeriesId(1),
 		pts: []plot.Point{
 			trivialPoint{0, 0},
 			trivialPoint{2, 3.0},
@@ -65,6 +67,7 @@ var samplePlatonicGraph = plot.DataToPlatonicGraph(
 	}},
 	plot.AutoAxes(),
 )
+
 func trivialDomLabeler(x int64) string {
 	return fmt.Sprintf("%2d", x)
 }
@@ -76,9 +79,9 @@ var _ = Describe("The Graph widget", func() {
 	Context("when dealing with size & content corner cases", func() {
 		It("should skip rendering if given zero columns", func() {
 			gr := &term.GraphView{
-				Graph: samplePlatonicGraph,
-				DomainLabeler: trivialDomLabeler, 
-				RangeLabeler: trivialRngLabeler,
+				Graph:         samplePlatonicGraph,
+				DomainLabeler: trivialDomLabeler,
+				RangeLabeler:  trivialRngLabeler,
 			}
 
 			gr.SetBox(term.PositionBox{Rows: 1, Cols: 0})
@@ -87,9 +90,9 @@ var _ = Describe("The Graph widget", func() {
 
 		It("should skip rendering if given zero rows", func() {
 			gr := &term.GraphView{
-				Graph: samplePlatonicGraph,
+				Graph:         samplePlatonicGraph,
 				DomainLabeler: trivialDomLabeler,
-				RangeLabeler: trivialRngLabeler,
+				RangeLabeler:  trivialRngLabeler,
 			}
 
 			gr.SetBox(term.PositionBox{Rows: 0, Cols: 100})
@@ -105,11 +108,11 @@ var _ = Describe("The Graph widget", func() {
 
 	It("should start writing at the position specified by its box", func() {
 		gr := &term.GraphView{
-			Graph: samplePlatonicGraph,
-			DomainLabeler: trivialDomLabeler,
-			RangeLabeler: trivialRngLabeler,
+			Graph:             samplePlatonicGraph,
+			DomainLabeler:     trivialDomLabeler,
+			RangeLabeler:      trivialRngLabeler,
 			DomainTickSpacing: 4,
-			RangeTickSpacing: 3,
+			RangeTickSpacing:  3,
 		}
 
 		gr.SetBox(term.PositionBox{
@@ -117,28 +120,28 @@ var _ = Describe("The Graph widget", func() {
 			Rows: 10, Cols: 12,
 		})
 
-		Expect(gr).To(DisplayLike(15, 13, 
+		Expect(gr).To(DisplayLike(15, 13,
 			"               "+
-			"  8.7┨ ⢸       "+
-			"  6.5┨ ⢸       "+
-			"     ┃ ⡜       "+
-			"  4.3┨ ⡇       "+
-			"  2.2┨ ⡇       "+
-			"     ┃⢰⠁       "+
-			"    0┨⡎      ⠐ "+
-			"     ┗━┯━┯━━┯━ "+
-			"         1  1  "+
-			"     0 5 0  7  "+
-			"               "+
-			"               "))
+				"  8.7┨ ⢸       "+
+				"  6.5┨ ⢸       "+
+				"     ┃ ⡜       "+
+				"  4.3┨ ⡇       "+
+				"  2.2┨ ⡇       "+
+				"     ┃⢰⠁       "+
+				"    0┨⡎      ⠐ "+
+				"     ┗━┯━┯━━┯━ "+
+				"         1  1  "+
+				"     0 5 0  7  "+
+				"               "+
+				"               "))
 	})
 
 	Context("when rendering axes", func() {
 		It("should use the provided tick labelers to label the axes", func() {
 			gr := &term.GraphView{
-				Graph: samplePlatonicGraph,
+				Graph:         samplePlatonicGraph,
 				DomainLabeler: func(x int64) string { return "X" },
-				RangeLabeler: func(y float64) string { return "Y" },
+				RangeLabeler:  func(y float64) string { return "Y" },
 			}
 
 			gr.SetBox(term.PositionBox{
@@ -146,9 +149,9 @@ var _ = Describe("The Graph widget", func() {
 			})
 			Expect(gr).To(DisplayLike(10, 4,
 				" ┃ ⡸⠉⠉⠉⠉⠉⠉"+
-				"Y┨⡠⠃     ⠠"+
-				" ┗━━━━━━┯━"+
-				" X      X "))
+					"Y┨⡠⠃     ⠠"+
+					" ┗━━━━━━┯━"+
+					" X      X "))
 
 		})
 		It("should use the provided tick spacing to space X & Y axis ticks", func() {
@@ -156,10 +159,10 @@ var _ = Describe("The Graph widget", func() {
 				Graph: samplePlatonicGraph,
 
 				// 1-char labelers to just test the tick spacing
-				DomainLabeler: func(x int64) string { return "X" },
-				RangeLabeler: func(y float64) string { return "Y" },
+				DomainLabeler:     func(x int64) string { return "X" },
+				RangeLabeler:      func(y float64) string { return "Y" },
 				DomainTickSpacing: 3,
-				RangeTickSpacing: 4,
+				RangeTickSpacing:  4,
 			}
 
 			gr.SetBox(term.PositionBox{
@@ -167,15 +170,15 @@ var _ = Describe("The Graph widget", func() {
 			})
 			Expect(gr).To(DisplayLike(10, 10,
 				"Y┨ ⢸      "+
-				" ┃ ⢸      "+
-				" ┃ ⡜      "+
-				"Y┨ ⡇      "+
-				" ┃ ⡇      "+
-				" ┃⢀⠇      "+
-				" ┃⢸       "+
-				"Y┨⡎      ⠐"+
-				" ┗━┯━┯━━┯━"+
-				" X X X  X "))
+					" ┃ ⢸      "+
+					" ┃ ⡜      "+
+					"Y┨ ⡇      "+
+					" ┃ ⡇      "+
+					" ┃⢀⠇      "+
+					" ┃⢸       "+
+					"Y┨⡎      ⠐"+
+					" ┗━┯━┯━━┯━"+
+					" X X X  X "))
 		})
 	})
 })

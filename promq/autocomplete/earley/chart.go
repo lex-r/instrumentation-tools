@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"sigs.k8s.io/instrumentation-tools/debug"
+	"github.com/lex-r/promq/debug"
 )
 
 // Earley parsers produce earley charts as an output, which

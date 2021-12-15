@@ -18,27 +18,28 @@ package term_test
 
 import (
 	"context"
-	"time"
 	"fmt"
-	"sync"
 	"os"
+	"sync"
+	"time"
 
+	goprompt "github.com/c-bata/go-prompt"
+	"github.com/gdamore/tcell"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/gdamore/tcell"
-	goprompt "github.com/c-bata/go-prompt"
 
-	"sigs.k8s.io/instrumentation-tools/promq/term"
+	"github.com/lex-r/promq/promq/term"
 )
 
 // fakeScreenish wraps a simulationScreen to allow us to quickly test the
 // prompt widget w/o using a whole runner.  It's threadsafe, unlike SimulationScreen.
 // Use WithScreen if you want threadsafe access to the underlying screen.
 type fakeScreenish struct {
-	mu sync.Mutex
+	mu     sync.Mutex
 	screen tcell.SimulationScreen
-	view term.Flushable
+	view   term.Flushable
 }
+
 func (s *fakeScreenish) ShowCursor(col, row int) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -55,6 +56,7 @@ func (s *fakeScreenish) RequestRepaint() {
 	s.view.FlushTo(s.screen)
 	s.screen.Show()
 }
+
 // WithScreen provides threadsafe access to the underlying SimulationScreen.
 // The SimulationScreen passed to the callback is not valid beyond the body of
 // the callback.
@@ -85,11 +87,11 @@ var (
 
 var _ = Describe("The Prompt widget", func() {
 	var (
-		screen *fakeScreenish
-		prompt *term.PromptView
+		screen       *fakeScreenish
+		prompt       *term.PromptView
 		waitForSetup chan struct{}
 
-		ctx context.Context
+		ctx    context.Context
 		cancel context.CancelFunc
 	)
 	BeforeEach(func() {
@@ -117,7 +119,7 @@ var _ = Describe("The Prompt widget", func() {
 
 		screen = &fakeScreenish{
 			screen: rawScreen,
-			view: prompt,
+			view:   prompt,
 		}
 		prompt.Screen = screen
 
@@ -144,19 +146,19 @@ var _ = Describe("The Prompt widget", func() {
 			sendRuneKeys("ch", prompt)
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> ch                                              "+
-				"     cheddar  only sharp cheddars allowed         ",
+					"     cheddar  only sharp cheddars allowed         ",
 			))
 
 			sendRuneKeys("edda", prompt)
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> chedda                                          "+
-				"         cheddar  only sharp cheddars allowed     ",
+					"         cheddar  only sharp cheddars allowed     ",
 			))
 
 			sendRuneKeys("\t", prompt)
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> cheddar                                         "+
-				"         cheddar  only sharp cheddars allowed     ",
+					"         cheddar  only sharp cheddars allowed     ",
 			))
 
 			sendRuneKeys("\r", prompt)
@@ -177,44 +179,44 @@ var _ = Describe("The Prompt widget", func() {
 			sendRuneKeys("\t", prompt)
 			Eventually(screen).Should(DisplayLike(50, 10,
 				">                                                 "+
-				"   cheddar      only sharp cheddars allowed       "+
-				"   parmesan     you'd better not mention the ...  "+
-				"   pepper jack  mmm... spicy                      ",
+					"   cheddar      only sharp cheddars allowed       "+
+					"   parmesan     you'd better not mention the ...  "+
+					"   pepper jack  mmm... spicy                      ",
 			))
 
 			By("selecting a completion with down arrow & completing it with tab")
 			prompt.HandleKey(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
 			Eventually(screen).Should(DisplayLike(50, 10,
 				">                                                 "+
-				"   cheddar      only sharp cheddars allowed       "+
-				"   parmesan     you'd better not mention the ...  "+
-				"   pepper jack  mmm... spicy                      ",
+					"   cheddar      only sharp cheddars allowed       "+
+					"   parmesan     you'd better not mention the ...  "+
+					"   pepper jack  mmm... spicy                      ",
 			))
 
 			sendRuneKeys("\t", prompt)
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> cheddar                                         "+
-				"   cheddar      only sharp cheddars allowed       "+
-				"   parmesan     you'd better not mention the ...  "+
-				"   pepper jack  mmm... spicy                      ",
+					"   cheddar      only sharp cheddars allowed       "+
+					"   parmesan     you'd better not mention the ...  "+
+					"   pepper jack  mmm... spicy                      ",
 			))
 
 			By("selecting a different completion with down arrow")
 			prompt.HandleKey(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> parmesan                                        "+
-				"   cheddar      only sharp cheddars allowed       "+
-				"   parmesan     you'd better not mention the ...  "+
-				"   pepper jack  mmm... spicy                      ",
+					"   cheddar      only sharp cheddars allowed       "+
+					"   parmesan     you'd better not mention the ...  "+
+					"   pepper jack  mmm... spicy                      ",
 			))
 
 			By("going back with up arrow")
 			prompt.HandleKey(tcell.NewEventKey(tcell.KeyUp, 0, tcell.ModNone))
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> cheddar                                         "+
-				"   cheddar      only sharp cheddars allowed       "+
-				"   parmesan     you'd better not mention the ...  "+
-				"   pepper jack  mmm... spicy                      ",
+					"   cheddar      only sharp cheddars allowed       "+
+					"   parmesan     you'd better not mention the ...  "+
+					"   pepper jack  mmm... spicy                      ",
 			))
 
 			By("navigating left with left arrow")
@@ -223,9 +225,9 @@ var _ = Describe("The Prompt widget", func() {
 			sendRuneKeys(" ", prompt)
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> chedd ar                                        "+
-				"   cheddar      only sharp cheddars allowed       "+
-				"   parmesan     you'd better not mention the ...  "+
-				"   pepper jack  mmm... spicy                      ",
+					"   cheddar      only sharp cheddars allowed       "+
+					"   parmesan     you'd better not mention the ...  "+
+					"   pepper jack  mmm... spicy                      ",
 			))
 
 			By("navigating right with right arrow")
@@ -233,13 +235,12 @@ var _ = Describe("The Prompt widget", func() {
 			sendRuneKeys(" ", prompt)
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> chedd a r                                       "+
-				"   cheddar      only sharp cheddars allowed       "+
-				"   parmesan     you'd better not mention the ...  "+
-				"   pepper jack  mmm... spicy                      ",
+					"   cheddar      only sharp cheddars allowed       "+
+					"   parmesan     you'd better not mention the ...  "+
+					"   pepper jack  mmm... spicy                      ",
 			))
 		})
 	})
-
 
 	It("should populate initial input into the prompt if given", func() {
 		initialInput := "pepper jack"
@@ -271,7 +272,7 @@ var _ = Describe("The Prompt widget", func() {
 
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"                                                  "+
-				"  >                                               ",
+					"  >                                               ",
 			))
 		})
 
@@ -281,7 +282,7 @@ var _ = Describe("The Prompt widget", func() {
 			// go-prompt eagerly consumes input then discards anything after
 			// the first \r, so wait till we get a new prompt between inputs
 			// like a real user would
-			pulse := make(chan struct{}, 10) 
+			pulse := make(chan struct{}, 10)
 			prompt.HandleInput = func(_ string) (*string, bool) {
 				// never exit normally, just use the cancel in aftereach
 				pulse <- struct{}{}
@@ -314,13 +315,13 @@ var _ = Describe("The Prompt widget", func() {
 			// Set this to skip if it becomes a problem.
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> monterey jack                              *    "+
-				"> wensleydale                                     "+
-				">                                                 "+
-				"   cheddar      only sharp cheddars...            "+
-				"   parmesan     you'd better not me...            "+
-				"   pepper jack  mmm... spicy                      "+
-				"                                                  "+
-				"*                                                 ",
+					"> wensleydale                                     "+
+					">                                                 "+
+					"   cheddar      only sharp cheddars...            "+
+					"   parmesan     you'd better not me...            "+
+					"   pepper jack  mmm... spicy                      "+
+					"                                                  "+
+					"*                                                 ",
 			))
 		})
 	})
@@ -376,13 +377,13 @@ var _ = Describe("The Prompt widget", func() {
 
 			Expect(screen).Should(DisplayLike(50, 10,
 				">                                                 "+
-				"now to find some crackers to go with that!",
+					"now to find some crackers to go with that!",
 			))
 		})
 
 		It("it should not display a blank line between prompts if no output is given", func() {
 			cnt := 0
-			pulse := make(chan struct{}, 10) 
+			pulse := make(chan struct{}, 10)
 			prompt.HandleInput = func(_ string) (text *string, stop bool) {
 				cnt++
 				pulse <- struct{}{}
@@ -403,7 +404,7 @@ var _ = Describe("The Prompt widget", func() {
 
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> cheddar                                         "+
-				"> monterey jack                                   ",
+					"> monterey jack                                   ",
 			))
 		})
 
@@ -411,7 +412,7 @@ var _ = Describe("The Prompt widget", func() {
 			// go-prompt eagerly consumes input then discards anything after
 			// the first \r, so wait till we get a new prompt between inputs
 			// like a real user would
-			pulse := make(chan struct{}, 10) 
+			pulse := make(chan struct{}, 10)
 			cnt := 0
 			prompt.HandleInput = func(_ string) (text *string, stop bool) {
 				cnt++
@@ -437,11 +438,11 @@ var _ = Describe("The Prompt widget", func() {
 
 			Eventually(screen).Should(DisplayLike(50, 10,
 				"> cheddar                                         "+
-				"count: 1                                          "+
-				"> monterey jack                                   "+
-				"count: 2                                          "+
-				"> parmesean                                       "+
-				"count: 3                                          ",
+					"count: 1                                          "+
+					"> monterey jack                                   "+
+					"count: 2                                          "+
+					"> parmesean                                       "+
+					"count: 3                                          ",
 			))
 		})
 	})

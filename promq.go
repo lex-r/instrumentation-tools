@@ -17,19 +17,19 @@ limitations under the License.
 package main
 
 import (
-    "os"
+	"os"
 
-    "github.com/spf13/pflag"
+	"github.com/spf13/pflag"
 
-    "k8s.io/cli-runtime/pkg/genericclioptions"
-    "sigs.k8s.io/instrumentation-tools/cmd"
+	"github.com/lex-r/promq/cmd"
+	"k8s.io/cli-runtime/pkg/genericclioptions"
 )
 
 func main() {
-    flags := pflag.NewFlagSet("pq", pflag.ExitOnError)
-    pflag.CommandLine = flags
-    root := cmd.NewCmdPromQ(genericclioptions.IOStreams{In: os.Stdin, Out: os.Stdout, ErrOut: os.Stderr})
-    if err := root.Execute(); err != nil {
-        os.Exit(1)
-    }
+	flags := pflag.NewFlagSet("pq", pflag.ExitOnError)
+	pflag.CommandLine = flags
+	root := cmd.NewCmdPromQ(genericclioptions.IOStreams{In: os.Stdin, Out: os.Stdout, ErrOut: os.Stderr})
+	if err := root.Execute(); err != nil {
+		os.Exit(1)
+	}
 }

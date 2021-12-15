@@ -20,22 +20,23 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/gdamore/tcell"
 	"github.com/onsi/gomega/format"
 	"github.com/onsi/gomega/types"
-	"github.com/gdamore/tcell"
 
-	"sigs.k8s.io/instrumentation-tools/promq/term"
+	"github.com/lex-r/promq/promq/term"
 )
 
 // cellsMatcher is a Ginkgo matcher that matches expected screen contents
 // against an actual tcell.Screen.  It can either match cells exactly, or only
 // their contents, ignoring style.
 type cellsMatcher struct {
-	expected tcell.SimulationScreen
+	expected     tcell.SimulationScreen
 	contentsOnly bool
 }
+
 // onScreenAsCells takes a flushable, writes it to a fake screen that's the
-// same size as the expected screen, and then extracts the screen's contents. 
+// same size as the expected screen, and then extracts the screen's contents.
 func (m *cellsMatcher) onScreenAsCells(contents term.Flushable) []tcell.SimCell {
 	screen := m.onScreen(contents)
 	cells, _, _ := screen.GetContents()
@@ -79,7 +80,7 @@ func (m *cellsMatcher) Match(actual interface{}) (bool, error) {
 	if m.expected == nil && actual == nil {
 		return false, fmt.Errorf("Refusing to compare <nil> to <nnil>")
 	}
-	
+
 	switch actual := actual.(type) {
 	case LockableScreen:
 		var matches bool
@@ -113,7 +114,7 @@ func (m *cellsMatcher) FailureMessage(actual interface{}) string {
 			cb(actualScreen)
 		}
 	case tcell.SimulationScreen:
-		 withScreen = func(cb func(tcell.SimulationScreen)) {
+		withScreen = func(cb func(tcell.SimulationScreen)) {
 			cb(actual)
 		}
 	default:
@@ -170,7 +171,7 @@ func displayCells(screen tcell.SimulationScreen) string {
 
 	var res []rune
 	for i, cell := range cells {
-		if i % screenCols == 0 && i != 0 {
+		if i%screenCols == 0 && i != 0 {
 			res = append(res, '\n')
 		}
 		if len(cell.Runes) != 0 {
@@ -198,7 +199,7 @@ func DisplayLike(width, height int, text string) types.GomegaMatcher {
 	col := -1
 	for _, rn := range text {
 		col++
-		if col % width == 0 {
+		if col%width == 0 {
 			row++
 			col = 0
 		}
@@ -223,11 +224,14 @@ func DisplayLike(width, height int, text string) types.GomegaMatcher {
 //
 // writes the word red in red, followed by the word blue in blue.
 func DisplayWithStyle(width, height int, pairs ...interface{}) types.GomegaMatcher {
-	if len(pairs) % 2 != 0 {
+	if len(pairs)%2 != 0 {
 		panic("DisplayWithStyle expects pairs of (text, style)")
 	}
 
-	spans := make([]struct{txt string; sty tcell.Style}, len(pairs)/2)
+	spans := make([]struct {
+		txt string
+		sty tcell.Style
+	}, len(pairs)/2)
 
 	for i, item := range pairs {
 		switch i % 2 {
@@ -255,7 +259,7 @@ func DisplayWithStyle(width, height int, pairs ...interface{}) types.GomegaMatch
 	for _, span := range spans {
 		for _, rn := range span.txt {
 			col++
-			if col % width == 0 {
+			if col%width == 0 {
 				row++
 				col = 0
 			}
@@ -280,7 +284,7 @@ func DisplayWithCells(width, height int, cells ...tcell.SimCell) types.GomegaMat
 	col := -1
 	for _, cell := range cells {
 		col++
-		if col % width == 0 {
+		if col%width == 0 {
 			row++
 			col = 0
 		}

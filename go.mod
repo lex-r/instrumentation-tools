@@ -1,4 +1,4 @@
-module sigs.k8s.io/instrumentation-tools
+module github.com/lex-r/promq
 
 go 1.14
 

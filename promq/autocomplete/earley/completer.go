@@ -21,9 +21,9 @@ import (
 	"strconv"
 	"strings"
 
-	"sigs.k8s.io/instrumentation-tools/debug"
-	"sigs.k8s.io/instrumentation-tools/notstdlib/sets"
-	"sigs.k8s.io/instrumentation-tools/promq/autocomplete"
+	"github.com/lex-r/promq/debug"
+	"github.com/lex-r/promq/notstdlib/sets"
+	"github.com/lex-r/promq/promq/autocomplete"
 )
 
 const (

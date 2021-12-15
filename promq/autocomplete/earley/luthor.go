@@ -19,12 +19,13 @@ package earley
 
 import (
 	"fmt"
-	"sigs.k8s.io/instrumentation-tools/notstdlib/sets"
 	"strings"
+
+	"github.com/lex-r/promq/notstdlib/sets"
 
 	"github.com/prometheus/prometheus/promql"
 
-	"sigs.k8s.io/instrumentation-tools/debug"
+	"github.com/lex-r/promq/debug"
 )
 
 type Tokens []Tokhan

@@ -35,14 +35,14 @@ import (
 	promtime "github.com/prometheus/prometheus/pkg/timestamp"
 	"github.com/prometheus/prometheus/promql"
 
+	"github.com/lex-r/promq/cmd/cli"
+	"github.com/lex-r/promq/notstdlib/sets"
+	"github.com/lex-r/promq/promq/autocomplete/earley"
+	"github.com/lex-r/promq/promq/prom"
+	"github.com/lex-r/promq/promq/term"
+	"github.com/lex-r/promq/promq/term/plot"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"k8s.io/client-go/rest"
-	"sigs.k8s.io/instrumentation-tools/cmd/cli"
-	"sigs.k8s.io/instrumentation-tools/notstdlib/sets"
-	"sigs.k8s.io/instrumentation-tools/promq/autocomplete/earley"
-	"sigs.k8s.io/instrumentation-tools/promq/prom"
-	"sigs.k8s.io/instrumentation-tools/promq/term"
-	"sigs.k8s.io/instrumentation-tools/promq/term/plot"
 )
 
 type MetricsCommand struct {
@@ -308,14 +308,14 @@ func (c *MetricsCommand) runInteractiveChart(ctx context.Context, runner *prom.P
 		}
 		return &term.SplitView{
 			DockSize: 9,
-			Dock: term.PosBelow,
-			Docked: promptView,
+			Dock:     term.PosBelow,
+			Docked:   promptView,
 			Flexed: &term.SplitView{
 				Docked: keyView,
 				Flexed: graphView,
 
-				Dock: term.PosLeft,
-				DockSize: keySize,
+				Dock:           term.PosLeft,
+				DockSize:       keySize,
 				DockMaxPercent: 20,
 			},
 		}
@@ -355,7 +355,7 @@ func (c *MetricsCommand) runInteractiveChart(ctx context.Context, runner *prom.P
 				return &msg, false
 			}
 			axesMu.Lock()
-			lastAxes = plot.AutoAxes()  // reset the axes when we change query
+			lastAxes = plot.AutoAxes() // reset the axes when we change query
 			axesMu.Unlock()
 
 			msg := fmt.Sprintf("Plotting %q...\n", input)

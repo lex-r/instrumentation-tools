@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"testing"
 
-	"sigs.k8s.io/instrumentation-tools/notstdlib/sets"
+	"github.com/lex-r/promq/notstdlib/sets"
 )
 
 func TestFilterPrefix(t *testing.T) {

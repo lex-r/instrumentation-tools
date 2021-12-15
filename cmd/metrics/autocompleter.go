@@ -17,9 +17,9 @@ limitations under the License.
 package metrics
 
 import (
-    "github.com/c-bata/go-prompt"
+	"github.com/c-bata/go-prompt"
 
-	"sigs.k8s.io/instrumentation-tools/promq/autocomplete"
+	"github.com/lex-r/promq/promq/autocomplete"
 )
 
 const (

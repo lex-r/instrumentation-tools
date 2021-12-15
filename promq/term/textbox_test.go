@@ -17,11 +17,11 @@ limitations under the License.
 package term_test
 
 import (
+	"github.com/gdamore/tcell"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/gdamore/tcell"
 
-	"sigs.k8s.io/instrumentation-tools/promq/term"
+	"github.com/lex-r/promq/promq/term"
 )
 
 var _ = Describe("The TextBox widget", func() {
@@ -37,7 +37,7 @@ var _ = Describe("The TextBox widget", func() {
 	It("should handle text with newlines properly, converting them to proper cursor movement", func() {
 		box := &term.TextBox{}
 		box.WriteString(
-`of shoes, and ships, and sealing wax,
+			`of shoes, and ships, and sealing wax,
     of cabbages, and kings,
 and why the sea is boiling hot
     and whether pigs have wings.`, tcell.StyleDefault)
@@ -49,9 +49,9 @@ and why the sea is boiling hot
 		Expect(box).To(DisplayLike(38, 4,
 			// NB: whitespace is significant here
 			"of shoes, and ships, and sealing wax, "+
-			"    of cabbages, and kings,           "+
-			"and why the sea is boiling hot        "+
-			"    and whether pigs have wings.      "))
+				"    of cabbages, and kings,           "+
+				"and why the sea is boiling hot        "+
+				"    and whether pigs have wings.      "))
 
 	})
 
@@ -132,11 +132,11 @@ and why the sea is boiling hot
 
 		Expect(box).To(DisplayLike(20, 6,
 			"                    "+
-			"                    "+
-			"                    "+
-			"                    "+
-			"                    "+
-			"     after          "))
+				"                    "+
+				"                    "+
+				"                    "+
+				"                    "+
+				"     after          "))
 	})
 
 	It("should handle multi-byte-single-rune contents", func() {

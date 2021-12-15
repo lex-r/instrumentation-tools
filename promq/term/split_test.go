@@ -17,11 +17,11 @@ limitations under the License.
 package term_test
 
 import (
+	"github.com/gdamore/tcell"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/gdamore/tcell"
 
-    "sigs.k8s.io/instrumentation-tools/promq/term"
+	"github.com/lex-r/promq/promq/term"
 )
 
 // flushableTestView is effectively a StaticResizable that just
@@ -41,8 +41,8 @@ var _ = Describe("StaticResizable", func() {
 		targetBox := term.PositionBox{
 			StartRow: 1,
 			StartCol: 2,
-			Rows: 3,
-			Cols: 4,
+			Rows:     3,
+			Cols:     4,
 		}
 		resizable.SetBox(targetBox)
 		Expect(resizable.PositionBox).To(Equal(targetBox), "recorded box should equal the passed in one")
@@ -51,7 +51,7 @@ var _ = Describe("StaticResizable", func() {
 
 var _ = Describe("SplitView", func() {
 	var (
-		view term.SplitView
+		view       term.SplitView
 		dockedView term.StaticResizable
 		flexedView term.StaticResizable
 	)

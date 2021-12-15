@@ -20,20 +20,21 @@ import (
 	"context"
 	"sync"
 
+	"github.com/gdamore/tcell"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/gdamore/tcell"
 
-	"sigs.k8s.io/instrumentation-tools/promq/term"
+	"github.com/lex-r/promq/promq/term"
 )
 
 // oneRuneView is a view that writes a single rune ('*' by default) to
 // the top left corner of its position box.  It's threadsafe.
 type oneRuneView struct {
-	pos term.PositionBox
+	pos        term.PositionBox
 	targetRune rune
-	mu sync.Mutex
+	mu         sync.Mutex
 }
+
 func (v *oneRuneView) FlushTo(screen tcell.Screen) {
 	v.mu.Lock()
 	defer v.mu.Unlock()
@@ -101,14 +102,15 @@ func waitForPollingStart(screen tcell.SimulationScreen, keys <-chan *tcell.Event
 		}
 	}).Should(BeTrue())
 }
+
 var _ = Describe("The overall Runner", func() {
 	var (
-		screen *threadSafeishScreen
-		cancel context.CancelFunc
-		keys chan *tcell.EventKey
-		done chan struct{}
-		runner *term.Runner
-		mainView *oneRuneView = &oneRuneView{}
+		screen      *threadSafeishScreen
+		cancel      context.CancelFunc
+		keys        chan *tcell.EventKey
+		done        chan struct{}
+		runner      *term.Runner
+		mainView    *oneRuneView = &oneRuneView{}
 		initialView term.View
 	)
 	BeforeEach(func() {

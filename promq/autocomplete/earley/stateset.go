@@ -3,7 +3,7 @@ package earley
 import (
 	"fmt"
 
-	"sigs.k8s.io/instrumentation-tools/debug"
+	"github.com/lex-r/promq/debug"
 )
 
 type StateType string

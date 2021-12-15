@@ -16,7 +16,7 @@ limitations under the License.
 
 package autocomplete
 
-import "sigs.k8s.io/instrumentation-tools/notstdlib/sets"
+import "github.com/lex-r/promq/notstdlib/sets"
 
 // in order to generate completion results, we require some store
 // to implement an interface for retrieving metric names, their

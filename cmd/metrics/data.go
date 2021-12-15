@@ -22,7 +22,7 @@ import (
 
 	"github.com/prometheus/prometheus/promql"
 
-	"sigs.k8s.io/instrumentation-tools/promq/term/plot"
+	"github.com/lex-r/promq/promq/term/plot"
 )
 
 // TODO: this practically has no reason to be an interface any more, and we can
@@ -58,11 +58,11 @@ func PromResultToPromSeriesSet(res *promql.Result) (plot.SeriesSet, error) {
 		}
 
 		// TODO: this is stable, but not guaranteed to be unique
-		id :=  plot.SeriesId(origSeries.Metric.Hash() % 255 + 1)
+		id := plot.SeriesId(origSeries.Metric.Hash()%255 + 1)
 
 		series := &PromSeries{
 			title: title,
-			id: id,
+			id:    id,
 		}
 
 		series.points = make([]plot.Point, len(origSeries.Points))
@@ -77,8 +77,8 @@ func PromResultToPromSeriesSet(res *promql.Result) (plot.SeriesSet, error) {
 }
 
 type PromSeries struct {
-	title string
-	id plot.SeriesId
+	title  string
+	id     plot.SeriesId
 	points []plot.Point
 }
 

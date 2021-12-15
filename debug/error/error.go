@@ -19,7 +19,7 @@ package error
 import (
 	"log"
 
-	"sigs.k8s.io/instrumentation-tools/debug"
+	"github.com/lex-r/promq/debug"
 )
 
 var (

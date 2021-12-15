@@ -16,7 +16,7 @@ limitations under the License.
 package earley
 
 import (
-	"sigs.k8s.io/instrumentation-tools/debug"
+	"github.com/lex-r/promq/debug"
 )
 
 // Heavily adapted from https://github.com/jakub-m/gearley

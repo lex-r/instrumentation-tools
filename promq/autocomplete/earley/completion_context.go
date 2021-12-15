@@ -19,7 +19,7 @@ package earley
 import (
 	"github.com/golang/protobuf/proto"
 
-	"sigs.k8s.io/instrumentation-tools/notstdlib/sets"
+	"github.com/lex-r/promq/notstdlib/sets"
 )
 
 type ContextualToken struct {

@@ -17,8 +17,8 @@ limitations under the License.
 package term
 
 import (
-    "sigs.k8s.io/instrumentation-tools/promq/term/plot"
 	"github.com/gdamore/tcell"
+	"github.com/lex-r/promq/promq/term/plot"
 )
 
 // GraphView is a widget that displays the given graph with on the screen.  You
@@ -30,10 +30,10 @@ type GraphView struct {
 	Graph *plot.PlatonicGraph
 
 	DomainLabeler plot.DomainLabeler
-	RangeLabeler plot.RangeLabeler
+	RangeLabeler  plot.RangeLabeler
 
 	DomainTickSpacing int
-	RangeTickSpacing int
+	RangeTickSpacing  int
 }
 
 func (g *GraphView) SetBox(box PositionBox) {
@@ -60,13 +60,13 @@ func (g *GraphView) FlushTo(screen tcell.Screen) {
 	screenSize := plot.ScreenSize{Cols: plot.Column(g.pos.Cols), Rows: plot.Row(g.pos.Rows)}
 	scale := func(p float64) float64 { return p }
 	axes := plot.EvenlySpacedTicks(g.Graph, screenSize, plot.TickScaling{
-		RangeScale: scale,
-		DomainDensity: domainSpacing, 
-		RangeDensity: rangeSpacing,
+		RangeScale:    scale,
+		DomainDensity: domainSpacing,
+		RangeDensity:  rangeSpacing,
 	}, plot.Labeling{
 		DomainLabeler: g.DomainLabeler,
-		RangeLabeler: g.RangeLabeler,
-		LineSize: 1,
+		RangeLabeler:  g.RangeLabeler,
+		LineSize:      1,
 	})
 
 	if axes.InnerGraphSize.Cols == 0 || axes.InnerGraphSize.Rows == 0 {
