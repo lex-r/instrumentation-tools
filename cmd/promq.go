@@ -17,32 +17,27 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"time"
 
-	_ "github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cobra"
+	"k8s.io/cli-runtime/pkg/genericclioptions"
 
 	"github.com/lex-r/promq/cmd/cli"
 	"github.com/lex-r/promq/cmd/metrics"
-	"k8s.io/cli-runtime/pkg/genericclioptions"
-	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
-	"k8s.io/client-go/tools/clientcmd/api"
 )
 
 // PromQOptions provides information required to updat
 type PromQOptions struct {
-	args        []string
-	rawConfig   api.Config
-	configFlags *genericclioptions.ConfigFlags
-	flags       cli.PromQFlags
+	args  []string
+	flags cli.PromQFlags
 	genericclioptions.IOStreams
 }
 
 // NewPromQOptions provides an instance of PQOptions
 func NewPromQOptions(streams genericclioptions.IOStreams) *PromQOptions {
 	return &PromQOptions{
-		configFlags: genericclioptions.NewConfigFlags(true),
-		IOStreams:   streams,
+		IOStreams: streams,
 	}
 }
 
@@ -55,8 +50,8 @@ func addFlags(cmd *cobra.Command, options *PromQOptions) {
 	cmd.Flags().BoolVarP(&options.flags.Continuous, "continuous", "c", options.flags.Continuous, "if true, runs continuously (i.e. gathers samples in mem)")
 	cmd.Flags().BoolVarP(&options.flags.List, "list", "l", options.flags.List, "if true, lists out observed metric names.")
 	cmd.Flags().StringVarP(&options.flags.PromQuery, "query", "q", "", "if specified, uses this query for analyzing a prometheus endpoint.")
-	cmd.Flags().StringVarP(&options.flags.Output, "output", "o", "json", "Output format for data, defaults to json")
-	cmd.Flags().StringArrayVarP(&options.flags.HostNames, "targets", "t", options.flags.HostNames, "By default uses the prometheus target from the master kubernetes from kubeconfig, override to target an arbitrary prometheus endpoint")
+	cmd.Flags().StringVarP(&options.flags.Output, "output", "o", "json", "output format for data, defaults to json")
+	cmd.Flags().StringArrayVarP(&options.flags.HostNames, "targets", "t", options.flags.HostNames, "prometheus metrics endpoint")
 }
 
 // NewCmdPromQ provides a cobra command wrapping AnalyzeOptions
@@ -106,18 +101,15 @@ promq -q "apiserver_request_total" -oyaml           # to query for all metrics m
 // Complete sets all information required for updating the current context
 func (o *PromQOptions) Complete(cmd *cobra.Command, args []string) error {
 	o.args = args
-
-	var err error
-	o.rawConfig, err = o.configFlags.ToRawKubeConfigLoader().RawConfig()
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
 // Validate ensures that all required arguments and flag values are provided
 func (o *PromQOptions) Validate() error {
-	// todo (validate)
+	if len(o.flags.HostNames) == 0 {
+		return fmt.Errorf("specify at least one target")
+	}
+
 	return nil
 }
 
@@ -126,10 +118,6 @@ func (o *PromQOptions) Run() error {
 }
 
 func (o *PromQOptions) toPromQCmd() (cli.PromQCommand, error) {
-	rc, err := o.configFlags.ToRESTConfig()
-	if err != nil {
-		return cli.PromQCommand{}, err
-	}
-	ac := cli.PromQCommand{RestConfig: rc, Streams: o.IOStreams}
+	ac := cli.PromQCommand{Streams: o.IOStreams}
 	return ac, nil
 }

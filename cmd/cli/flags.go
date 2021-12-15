@@ -20,19 +20,17 @@ import (
 	"fmt"
 
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"k8s.io/client-go/rest"
 )
 
 type PromQCommand struct {
-	RestConfig *rest.Config
-	Streams    genericclioptions.IOStreams
+	Streams genericclioptions.IOStreams
 }
 
 type PromQFlags struct {
 	List       bool
 	PromQuery  string
 	Output     string
-	HostNames       []string
+	HostNames  []string
 	Continuous bool
 }
 

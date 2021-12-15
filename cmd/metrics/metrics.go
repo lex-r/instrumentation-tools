@@ -41,8 +41,6 @@ import (
 	"github.com/lex-r/promq/promq/prom"
 	"github.com/lex-r/promq/promq/term"
 	"github.com/lex-r/promq/promq/term/plot"
-	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
-	"k8s.io/client-go/rest"
 )
 
 type MetricsCommand struct {
@@ -81,11 +79,7 @@ func (d DataSources) ScrapePrometheusEndpoint(ctx context.Context, ts time.Time)
 }
 
 func (c *MetricsCommand) getClient() (*http.Client, error) {
-	rt, err := rest.TransportFor(c.RestConfig)
-	if err != nil {
-		return nil, err
-	}
-	return &http.Client{Transport: rt}, nil
+	return http.DefaultClient, nil
 }
 
 type httpSource struct {
@@ -142,10 +136,6 @@ func (c *MetricsCommand) setupSources(flags cli.PromQFlags) error {
 	for i, url := range flags.HostNames {
 		src := &httpSource{url: url, client: client}
 		sources[i] = src
-	}
-	if len(sources) == 0 {
-		kubeCfgHost := metricsURL(c.RestConfig.Host)
-		sources = append(sources, &httpSource{url: kubeCfgHost, client: client})
 	}
 	c.sources = DataSources{
 		sources: sources,
